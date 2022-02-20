@@ -1,0 +1,63 @@
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.5"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--log.level=INFO"
+      - "--api"
+      - "--accesslog=true"
+      # - "--accesslog.filePath=/logs/access.log"
+      - "--metrics.prometheus=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=my_traefik_network"
+      - "--providers.file.directory=/config"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=Markus.Papenbrock@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "80:80"
+        #- "8080:8080"
+    volumes:
+      - "./config:/config"
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    labels:
+        #___ core configs
+      - "traefik.enable=true"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`traefik.{{ main_domain }}`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=authtraefik@file,mp-headers@file"
+
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+       
+networks:
+  default:
+    external:
+      name: my_traefik_network
+
+
+

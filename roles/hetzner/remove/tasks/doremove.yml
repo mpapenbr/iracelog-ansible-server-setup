@@ -1,0 +1,41 @@
+
+- name: Gather server info
+  hcloud_server:
+    api_token: "{{ hetzner_secret }}"
+    name: "{{ server.hostname }}"
+  register: serverinfo
+
+
+
+- name: print status
+  debug:
+    msg:
+      - "created {{ serverinfo.hcloud_server.name }}"
+      - "id: {{ serverinfo.hcloud_server.id }}"
+      - "type:        {{ serverinfo.hcloud_server.server_type }}"
+      - "status:      {{ serverinfo.hcloud_server.status }}"
+      - "datacenter:  {{ serverinfo.hcloud_server.datacenter }}"
+      - "IPv4:        {{ serverinfo.hcloud_server.ipv4_address }}"
+      - "IPv6:        {{ serverinfo.hcloud_server.ipv6 }}"
+
+
+- name: remove DNS A records
+  community.general.netcup_dns:
+    api_key: "{{ netcup_api_key }}"
+    api_password: "{{ netcup_api_password }}"
+    customer_id: "{{ netcup_customer_id }}"
+    domain: "{{ main_domain }}"
+    name: "{{ item }}"
+    type: "A"
+    value: "{{ serverinfo.hcloud_server.ipv4_address }}"
+    state: absent
+  loop: "{{ server.subdomains }}"
+
+
+- name: Remove server
+  hcloud_server:
+    name: "{{ server.hostname }}"
+    api_token: "{{ hetzner_secret }}"
+    state: absent
+  register: server
+

@@ -1,0 +1,10 @@
+db_schema: iracelog
+db_user: "{{ vault_db_user }}"
+db_password: "{{ vault_db_password }}"
+racelog_dataprovider_ticket: "{{ vault_racelog_dataprovider_ticket }}"
+racelog_backend_ticket: "{{ vault_racelog_backend_ticket }}"
+racelog_admin_ticket: "{{ vault_racelog_admin_ticket }}"
+iracelog_ism_version: v0.2.3
+iracelog_ias_version: v0.1.1
+iracelog_frontend_version: v0.13.0
+

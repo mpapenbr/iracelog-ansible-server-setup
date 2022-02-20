@@ -1,0 +1,8 @@
+---
+roles:
+
+collections:
+  - name: robertdebock.roles
+  - name: community.general
+  - name: community.docker
+  - name: hetzner.hcloud

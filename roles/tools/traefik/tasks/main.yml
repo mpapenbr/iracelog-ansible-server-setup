@@ -1,0 +1,57 @@
+- name: Create directory for traefik
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{username}}"
+    group: "{{username}}"
+  loop:
+    - "~{{username}}/traefik/config"
+    - "~{{username}}/traefik/logs"
+    - "~{{username}}/traefik/letsencrypt"
+  
+
+- name: Prepare docker compose file
+  template:
+      src=docker-compose.yml
+      dest=~{{username}}/traefik
+      owner="{{username}}"
+      group="{{username}}"
+
+- name: ensure docker service network
+  community.docker.docker_network:
+    name: my_traefik_network
+  register: output
+
+- name: copy config files
+  copy:
+    src: "{{ item }}"
+    dest: "~{{ username }}/traefik/config/{{ item }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - base.yml    
+    - tls.yml
+
+- name: copy templated config files
+  template:
+    src: "{{ item }}"
+    dest: "~{{ username }}/traefik/config/{{ item }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - basicauth.yml
+    
+
+
+
+- name: start services
+  community.docker.docker_compose:
+    project_src: "~{{ username }}/traefik"
+    state: present
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+

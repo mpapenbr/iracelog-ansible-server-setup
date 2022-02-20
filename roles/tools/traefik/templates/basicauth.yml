@@ -1,0 +1,8 @@
+# Declaring the user list
+http:
+  middlewares:
+    authtraefik:
+      basicAuth:
+        users:          
+          - "{{ vault_traefik_user }}:{{ traefik_password | password_hash('bcrypt') }}" 
+          

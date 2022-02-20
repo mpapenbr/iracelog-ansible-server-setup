@@ -1,0 +1,16 @@
+
+all:
+  children:
+    prod:
+      hosts:
+        server:
+          ansible_host: 49.12.15.63
+          ansible_user: root
+          
+          
+          
+
+
+
+
+

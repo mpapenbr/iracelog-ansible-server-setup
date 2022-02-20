@@ -1,0 +1,50 @@
+---
+- name: create server {{ server.hostname }} at Hetzner
+  hetzner.hcloud.hcloud_server:
+    name: "{{ server.hostname }}"
+    server_type: "{{ server.server_type | default('cx11') }}"
+    location: "{{ server.server_location | default ('fsn1')}}"
+    image: "{{ server.server_os | default('ubuntu-20.04')}}"
+    ssh_keys:
+      - ansible
+    state: present
+    api_token: "{{ hetzner_secret }}"
+  register: hetzner_create_server
+
+# - name: create  a volume
+#   hcloud_volume:
+#     name: "{{ server_hostname }}-volume"
+#     server: "{{ server_hostname }}"
+#     format: ext4
+#     size: "{{ volume_size }}"
+#     api_token: "{{ hetzner_secret }}"
+#     state: present
+#   register: volume
+
+
+
+- name: print status
+  debug:
+    msg:
+      - "created {{ hetzner_create_server.hcloud_server.name }}"
+      - "id: {{ hetzner_create_server.hcloud_server.id }}"
+      - "type:        {{ hetzner_create_server.hcloud_server.server_type }}"
+      - "status:      {{ hetzner_create_server.hcloud_server.status }}"
+      - "datacenter:  {{ hetzner_create_server.hcloud_server.datacenter }}"
+      - "IPv4:        {{ hetzner_create_server.hcloud_server.ipv4_address }}"
+      - "IPv6:        {{ hetzner_create_server.hcloud_server.ipv6 }}"
+
+
+
+- name: create DNS A records
+  community.general.netcup_dns:
+    api_key: "{{ netcup_api_key }}"
+    api_password: "{{ netcup_api_password }}"
+    customer_id: "{{ netcup_customer_id }}"
+    domain: "{{ main_domain }}"
+    name: "{{ item }}"
+    type: "A"
+    value: "{{ hetzner_create_server.hcloud_server.ipv4_address }}"
+  loop: "{{ server.subdomains }}"
+  when:
+    - server.subdomains is defined

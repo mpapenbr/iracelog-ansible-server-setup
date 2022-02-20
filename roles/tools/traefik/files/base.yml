@@ -1,0 +1,8 @@
+
+http:
+  middlewares:
+    # used when delegating by the first path part which should be removed
+    strip-first:
+      replacepathregex: 
+        regex: "^/(.*?)/(.*)"
+        replacement: "/$2"

@@ -1,0 +1,37 @@
+# setting for ansible
+bootstrap_wait_for_host: true
+ansible_user: root
+
+# the user name we use to install the iracelog software
+username: sample
+
+# settings for user
+users_group_list:
+  - name: "{{ username }}"
+  - name: users
+
+users_user_list:
+  - name: "{{ username }}"
+    group: "{{ username }}"
+    groups:
+      - users    
+    sudo_options: "ALL=(ALL) NOPASSWD: ALL"    
+
+# settings for ssh
+openssh_password_authentication: "no"
+
+# settings for firewall
+firewall_services:
+  - name: ssh
+  - name: http
+  - name: https
+
+# settings for docker
+docker_privileged_users:
+  - "{{ username }}"
+
+# settings for iracelog
+main_domain: mp-playground.de
+iracelog_ism_version: v0.2.3
+iracelog_ias_version: v0.1.1
+iracelog_frontend_version: v0.13.0

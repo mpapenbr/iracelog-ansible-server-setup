@@ -1,0 +1,49 @@
+- name: Create directory for iracelog
+  file:
+    path: "~{{username}}/iracelog/config/iracelog"
+    state: directory
+    mode: 0755
+    recurse: true
+    owner: "{{username}}"
+    group: "{{username}}"
+
+- name: copy static configs
+  copy:
+    src: crossbar
+    dest: "~{{ username }}/iracelog/config"
+    owner: "{{username}}"
+    group: "{{username}}"
+
+- name: Distribute templated files
+  template:
+      src: "templates/{{ item.src }}"
+      dest: "~{{username}}/iracelog/{{ item.dest }}"
+      owner: "{{username}}"
+      group: "{{username}}"
+      mode: "{{ item.mode | default('u=rw,g=rw,o=r') }}"
+  with_items:
+    - {src: '.env.j2', dest: ".env"}
+    - {src: 'docker-compose.yml.j2', dest: "docker-compose.yml"}
+    - {src: 'frontend.json.j2', dest: "config/iracelog/frontend.json"}
+    
+
+- name: start iracelog migration
+  community.docker.docker_compose:
+    project_src: "~{{ username }}/iracelog"
+    services: db-migrate
+    state: present
+  register: output
+
+- name: start iracelog main services
+  community.docker.docker_compose:
+    project_src: "~{{ username }}/iracelog"
+    services: main-services
+    state: present
+  register: output
+
+
+- name: startup output
+  ansible.builtin.debug:
+    var: output
+
+

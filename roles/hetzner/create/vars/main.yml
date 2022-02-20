@@ -1,0 +1,5 @@
+hetzner_secret: "{{ vault_hetzner_secret }}"
+netcup_api_key: "{{ vault_netcup_api_key }}"
+netcup_api_password: "{{ vault_netcup_api_password }}"
+netcup_customer_id: "{{ vault_netcup_customer_id }}"
+

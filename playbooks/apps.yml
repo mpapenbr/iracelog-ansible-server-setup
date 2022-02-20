@@ -1,0 +1,12 @@
+
+
+- name: Provision the common required software
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - robertdebock.roles.bootstrap
+    - robertdebock.roles.docker
+    - robertdebock.roles.docker_compose    
+    - tools/traefik
+    - apps/iracelog

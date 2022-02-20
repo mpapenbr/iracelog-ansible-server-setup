@@ -1,0 +1,198 @@
+version: "3.3"
+
+services:
+
+  db:
+    image: postgres:14
+    restart: always
+    # only used for development
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+
+    environment:
+      TZ: "Europe/Berlin"
+      POSTGRES_DB: ${DB_SCHEMA}
+      POSTGRES_USER: ${DB_USER_NAME}
+      POSTGRES_PASSWORD: ${DB_USER_PASSWORD}
+
+    networks:
+      - somenet
+
+  crossbar:
+    image: crossbario/crossbar:cpy-amd64-21.2.1
+    restart: always
+    networks:
+      - somenet
+      - traefiknet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    environment:
+      TZ: "Europe/Berlin"
+      CROSSBAR_DATAPROVIDER_TICKET: ${CROSSBAR_DATAPROVIDER_TICKET}
+      CROSSBAR_BACKEND_TICKET: ${CROSSBAR_BACKEND_TICKET}
+      CROSSBAR_ADMIN_TICKET: ${CROSSBAR_ADMIN_TICKET}
+    volumes:
+      - ./config/crossbar/cb-racelog.json:/node/.crossbar/config.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crossbar.rule=Host(`crossbar.{{ main_domain }}`)"
+      - "traefik.http.routers.crossbar.entrypoints=websecure"
+      - "traefik.http.routers.crossbar.tls=true"
+      - "traefik.http.routers.crossbar.tls.certresolver=myresolver"
+      - "traefik.http.routers.crossbar.middlewares=mp-headers@file"
+      - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
+      - "traefik.docker.network=my_traefik_network"
+
+
+  # iracelog-service-manager
+  ism-manager:
+    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    networks:
+      - somenet
+
+    environment:
+      TZ: "Europe/Berlin"
+      RACELOG_URL: ${RACELOG_URL}
+      RACELOG_REALM: ${RACELOG_REALM}
+      RACELOG_USER: ${RACELOG_USER}
+      RACELOG_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
+      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+
+    command: "ism --check http://crossbar:8080/info manager"
+    depends_on:
+      - db
+      - crossbar
+
+  ism-archiver:
+    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    networks:
+      - somenet
+
+    environment:
+      TZ: "Europe/Berlin"
+      RACELOG_URL: ${RACELOG_URL}
+      RACELOG_REALM: ${RACELOG_REALM}
+      RACELOG_USER: ${RACELOG_USER}
+      RACELOG_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
+      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+
+    command: "ism --check http://crossbar:8080/info archiver"
+    depends_on:
+      - db
+      - crossbar
+
+  # iracelog-analysis-service
+  ias:
+    image: ghcr.io/mpapenbr/iracelog-analysis-service:{{ iracelog_ias_version }}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    networks:
+      - somenet
+
+    environment:
+      TZ: "Europe/Berlin"
+      CROSSBAR_URL: ${RACELOG_URL}
+      CROSSBAR_REALM: ${RACELOG_REALM}
+      CROSSBAR_USER: ${RACELOG_USER}
+      CROSSBAR_CREDENTIALS: ${CROSSBAR_BACKEND_TICKET}
+      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+
+    depends_on:
+      - db
+      - crossbar
+
+  # the frontend
+  iracelog:
+    image: ghcr.io/mpapenbr/iracelog-web:{{ iracelog_frontend_version }}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    networks:
+      - somenet
+      - traefiknet
+
+
+    environment:
+      TZ: "Europe/Berlin"
+    volumes:
+      - ./config/iracelog/frontend.json:/usr/share/nginx/html/config.json
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`iracelog.{{ main_domain }}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.frontend.middlewares=mp-headers@file,compress-content@file"
+      - "traefik.docker.network=my_traefik_network"
+
+
+
+  db-migrate:
+
+    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
+    networks:
+      - somenet
+    environment:
+      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+
+    command: "./wait-for-it.sh -h db -p 5432 -s -- alembic -c src/iracelog_service_manager/db/alembic.ini  upgrade head"
+    depends_on:
+      - db
+
+  main-services:
+    image: busybox
+    command: sh -c "Starting services"
+    depends_on:
+      - db
+      - crossbar
+      - ism-manager
+      - ism-archiver
+      - ias
+      - iracelog
+
+
+volumes:
+  db-data:
+  backup:
+
+
+
+networks:
+  somenet:
+  traefiknet:
+    external:
+      name: my_traefik_network
+
+
+

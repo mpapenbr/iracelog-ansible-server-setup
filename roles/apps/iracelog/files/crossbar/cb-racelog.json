@@ -1,0 +1,160 @@
+{
+    "version": 2,
+    "controller": {},
+    "workers": [
+        {
+            "type": "router",
+            "realms": [
+                {
+                    "name": "racelog",
+                    "roles": [
+                        {
+                            "name": "anonymous",
+                            "permissions": [
+                                {
+                                    "uri": "racelog.public",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": false,
+                                        "publish": false,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "racedata_provider",
+                            "permissions": [
+                                {
+                                    "uri": "racelog.dataprovider",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": false,
+                                        "publish": true,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                },
+                                {
+                                    "uri": "racelog.public.live.state",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "publish": true
+                                    },
+
+                                    "cache": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "backend",
+                            "permissions": [
+                                {
+                                    "uri": "racelog.",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": true,
+                                        "publish": true,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "admin",
+                            "permissions": [
+                                {
+                                    "uri": "racelog.",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": true,
+                                        "publish": true,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "transports": [
+                {
+                    "type": "web",
+                    "endpoint": {
+                        "type": "tcp",
+                        "port": 8080
+                    },
+                    "paths": {
+                        "info": {
+                            "type": "nodeinfo"
+                         },
+
+                         "ws": {
+                             "type": "websocket",
+                             "options": {
+                                 "auto_ping_interval": 30000,
+                                 "compression": {
+                                    "deflate": {
+                                       "request_no_context_takeover": false,
+                                       "request_max_window_bits": 11,
+                                       "no_context_takeover": false,
+                                       "max_window_bits": 11,
+                                       "memory_level": 4
+                                    }
+                                 }
+
+                             },
+                             "auth": {
+                                "anonymous": {
+                                    "type": "static",
+                                    "role": "anonymous"
+                                },
+                                "ticket": {
+                                    "type": "static",
+                                    "principals": {
+                                        "dataprovider": {
+                                            "ticket": "${CROSSBAR_DATAPROVIDER_TICKET}",
+                                            "role": "racedata_provider"
+                                        },
+                                        "backend": {
+                                            "ticket": "${CROSSBAR_BACKEND_TICKET}",
+                                            "role": "backend"
+                                        },
+                                        "admin": {
+                                            "ticket": "${CROSSBAR_ADMIN_TICKET}",
+                                            "role": "admin"
+                                        }
+                                    }
+                                }
+                            }
+
+                         }
+                    }
+                }
+            ]
+        }
+    ]
+}

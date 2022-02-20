@@ -1,0 +1,12 @@
+- name: echo Welcome to remove servers
+  debug: msg=Welcome 
+
+- name: loop over remove list
+  ansible.builtin.include_tasks:
+    file: doremove.yml
+  loop: "{{ hetzner_remove_server_list }}"
+  loop_control:
+    label: "{{ server.hostname }}"
+    loop_var: server
+  when:
+    - hetzner_remove_server_list is defined

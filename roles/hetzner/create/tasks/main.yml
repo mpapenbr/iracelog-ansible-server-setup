@@ -1,0 +1,12 @@
+- name: echo Welcome
+  debug: msg=Welcome
+
+- name: loop over order list
+  ansible.builtin.include_tasks:
+    file: order.yml
+  loop: "{{ hetzner_order_server_list }}"
+  loop_control:
+    label: "{{ server.hostname }}"
+    loop_var: server
+  when:
+    - hetzner_order_server_list is defined

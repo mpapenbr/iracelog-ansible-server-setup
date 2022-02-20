@@ -1,0 +1,21 @@
+---
+# This vault file should be encrypted when replaced with real data.
+
+# this is used for the Hetzner-API for creating servers
+vault_hetzner_secret: "Enter Hetzner-API key here"
+# this is used for the Netcup-API to manage DNS records
+vault_netcup_api_key: "Enter Netcup-API key here"
+vault_netcup_api_password: "Enter Netcup-API password here"
+vault_netcup_customer_id: EnterYourNetcupCustomerId
+
+
+# this is used for test-setup for iracelog
+vault_db_user: docker
+vault_db_password: EnterPasswordHere
+vault_racelog_dataprovider_ticket: EnterPasswordHere
+vault_racelog_backend_ticket: EnterPasswordHere
+vault_racelog_admin_ticket: EnterPasswordHere
+
+# this is used for traefik
+vault_traefik_user: traefik
+vault_traefik_password: EnterPasswordHere

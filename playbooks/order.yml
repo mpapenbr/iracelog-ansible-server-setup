@@ -1,0 +1,20 @@
+
+- name: Order servers
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - hetzner/create
+
+  vars:
+    hetzner_order_server_list:
+    # this will become the server for iracing-tools.de
+    - hostname: server
+      # main_domain: mp-playground.de
+      server_type: cx21
+      subdomains:
+        - server
+        - traefik
+        - iracelog
+        - crossbar
+    

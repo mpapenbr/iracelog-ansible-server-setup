@@ -1,0 +1,8 @@
+# we need these modules locally installed
+ansible
+Jinja2>=3
+bcrypt
+hcloud
+nc-dnsapi
+passlib
+

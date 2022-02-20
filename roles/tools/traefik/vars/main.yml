@@ -1,0 +1,2 @@
+traefik_user: "{{ vault_traefik_user }}"
+traefik_password: "{{ vault_traefik_password }}"
