@@ -15,7 +15,9 @@ users_user_list:
     group: "{{ username }}"
     groups:
       - users    
-    sudo_options: "ALL=(ALL) NOPASSWD: ALL"    
+    sudo_options: "ALL=(ALL) NOPASSWD: ALL" 
+    authorized_keys:
+      - "Insert content of file hetzner.pub here"
 
 # settings for ssh
 openssh_password_authentication: "no"

@@ -6,7 +6,7 @@
     location: "{{ server.server_location | default ('fsn1')}}"
     image: "{{ server.server_os | default('ubuntu-20.04')}}"
     ssh_keys:
-      - ansible
+      - hetzner
     state: present
     api_token: "{{ hetzner_secret }}"
   register: hetzner_create_server
