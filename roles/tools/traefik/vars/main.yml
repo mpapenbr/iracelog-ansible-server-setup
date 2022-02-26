@@ -1,2 +1,3 @@
 traefik_user: "{{ vault_traefik_user }}"
 traefik_password: "{{ vault_traefik_password }}"
+lets_encrypt_email_address: "{{ vault_lets_encrypt_email_address }}"

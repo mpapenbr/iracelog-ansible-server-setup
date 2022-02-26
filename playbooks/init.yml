@@ -2,9 +2,6 @@
   hosts: prod
   become: true
   gather_facts: false
-  # vars_files:
-  #  - vars/vault.yml
-  #  - vars/default.yml
   roles:
     - robertdebock.roles.bootstrap
     - robertdebock.roles.core_dependencies
@@ -16,6 +13,7 @@
     - robertdebock.roles.fail2ban
     - robertdebock.roles.openssh
     - robertdebock.roles.firewall
+    - robertdebock.roles.auto_update    
     - robertdebock.roles.update    
     - robertdebock.roles.docker
     - robertdebock.roles.docker_compose    

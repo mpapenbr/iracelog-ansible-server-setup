@@ -8,9 +8,8 @@
 
   vars:
     hetzner_order_server_list:
-    # this will become the server for iracing-tools.de
-    - hostname: server
-      # main_domain: mp-playground.de
+    
+    - hostname: server      
       server_type: cx21
       subdomains:
         - server

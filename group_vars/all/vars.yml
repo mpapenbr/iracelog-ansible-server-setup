@@ -3,7 +3,7 @@ bootstrap_wait_for_host: true
 ansible_user: root
 
 # the user name we use to install the iracelog software
-username: sample
+username: "{{ vault_username }}"
 
 # settings for user
 users_group_list:
@@ -17,7 +17,7 @@ users_user_list:
       - users    
     sudo_options: "ALL=(ALL) NOPASSWD: ALL" 
     authorized_keys:
-      - "Insert content of file hetzner.pub here"
+      - "{{ vault_hetzner_public_key }}"
 
 # settings for ssh
 openssh_password_authentication: "no"

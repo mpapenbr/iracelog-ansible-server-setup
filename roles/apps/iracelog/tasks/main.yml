@@ -25,7 +25,12 @@
     - {src: '.env.j2', dest: ".env"}
     - {src: 'docker-compose.yml.j2', dest: "docker-compose.yml"}
     - {src: 'frontend.json.j2', dest: "config/iracelog/frontend.json"}
-    
+
+- name: shutdown iracelog app
+  community.docker.docker_compose:
+    project_src: "~{{ username }}/iracelog"    
+    state: absent
+  register: output    
 
 - name: start iracelog migration
   community.docker.docker_compose:
