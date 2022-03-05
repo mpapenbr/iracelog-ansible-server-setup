@@ -4,11 +4,38 @@ This guide shows how to setup the iracelog backend on a server.
 In order to perform this you need Python (minimum 3.8) installed an the system. 
 See https://python.org for installation instructions.
 ## Very first start
-In the following the term *console* (or *shell*) describes a Linux-shell or the command prompt on Windows.
+In the following the term *console* (or *shell*) describes a Linux-shell.
+
+Windows users should use the Windows Subsystem for Linux (WSL). In case you don't already have it installed you can find the installation instructions [here](https://docs.microsoft.com/de-de/windows/wsl/install). When you setup a Linux distribution please use Ubuntu 20.04.
+
+**Note**: Installing Python along with Ansible directly on Windows turned out to be a little error prone so the easiest way seems to be using the WSL. For the purpose of just running ansible in the WSL it is ok to have WSL 1. In case this is already available there is no need to update to WSL 2
+
+So, from here the base for the the following commands is the Linux shell.
 
 You need certain software available on the host running the ansible scripts (the ansible client).
+- Python >= 3.8
+- Ansible >= 2.8
 
-Run the following commands on the console.
+### Python
+Python should already available on the system. Check the version by 
+
+```console
+python --version
+```
+Check the output to verify the version is 3.8 or higher. If the command fails, try 
+```console
+python3 --version
+```
+
+If Python is not installed you may follow the instructions on [this post for python](https://linuxize.com/post/how-to-install-python-3-9-on-ubuntu-20-04/)  and [this post for python-pip](https://linuxize.com/post/how-to-install-pip-on-ubuntu-20.04/)
+
+
+### Ansible
+
+Follow the instructions from the [official Ansible documentation](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-ubuntu)
+
+
+Once Python and Ansible are installed, run the following commands on the console.
 ```console
 pip install -r py_requirements.txt
 ansible-galaxy collection install -r requirements.yml
