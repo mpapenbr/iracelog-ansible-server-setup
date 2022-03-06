@@ -1,0 +1,16 @@
+
+all:
+  children:
+    prod:
+      hosts:
+        server:
+          ansible_host: 0.0.0.0 # this needs to be changed, see README for details
+          ansible_user: root
+          
+          
+          
+
+
+
+
+

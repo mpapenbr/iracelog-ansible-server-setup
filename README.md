@@ -41,7 +41,9 @@ pip install -r py_requirements.txt
 ansible-galaxy collection install -r requirements.yml
 ```
 
+In the current directory copy the file `host.yml.sample` to `host.yml`
 In the directory `group_vars/all` copy the file `vault_vars.sample` to `vault_vars`
+
 
 ## Sample with server at Hetzner and DNS at Netcup
 
@@ -91,7 +93,7 @@ Your netcup customer id is shown in brackets behind your name.
 Enter the data into the vault variables.
 
 Now is good time to order the domain at netcup. Enter the domain setup 
-You don't need to do anything else, the following setup will take care about. Just make sure you enter the domain in `group_vars/all/vars.yml` for the key *main_domain*.
+You don't need to do anything else, the following setup will take care about. Just make sure you enter the domain in `group_vars/all/vault_vars` for the key *vault_main_domain*.
 
 Once the domain is available (this may take some time, check this via netcup adminstration) you can proceed with the next steps.
 

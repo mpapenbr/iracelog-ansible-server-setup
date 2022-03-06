@@ -10,7 +10,7 @@ vault_netcup_api_password: "Enter Netcup-API password here"
 vault_netcup_customer_id: EnterYourNetcupCustomerId
 
 
-# this is used for test-setup for iracelog
+# this is used for iracelog
 vault_db_user: docker
 vault_db_password: EnterPasswordHere
 vault_racelog_dataprovider_ticket: EnterPasswordHere
@@ -25,4 +25,6 @@ vault_traefik_password: EnterPasswordHere
 vault_username: sample
 vault_hetzner_public_key: "Insert content of hetzner.pub here" 
 vault_lets_encrypt_email_address: EnterYourEmailAddressForLetsEncryptCertsHere
+vault_main_domain: EnterTheDomainHere
+
 

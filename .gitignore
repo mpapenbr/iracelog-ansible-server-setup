@@ -1,3 +1,4 @@
 hetzner
 hetzner.pub
 group_vars/all/vault_vars
+host.yml
