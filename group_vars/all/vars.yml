@@ -36,4 +36,4 @@ docker_privileged_users:
 main_domain: EnterYourDomain
 iracelog_ism_version: v0.2.3
 iracelog_ias_version: v0.1.1
-iracelog_frontend_version: v0.13.0
+iracelog_frontend_version: v0.14.0
