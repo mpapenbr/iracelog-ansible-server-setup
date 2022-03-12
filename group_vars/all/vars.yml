@@ -19,6 +19,13 @@ users_user_list:
     authorized_keys:
       - "{{ vault_hetzner_public_key }}"
 
+# settings for auto_update
+auto_update_apply_updates: yes
+
+# locale settings
+locale_lang: en_US.UTF-8
+locale_timezone: Europe/Berlin
+
 # settings for ssh
 openssh_password_authentication: "no"
 

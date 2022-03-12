@@ -5,6 +5,7 @@
   roles:
     - robertdebock.roles.bootstrap
     - robertdebock.roles.core_dependencies
+    - robertdebock.roles.locale
     - robertdebock.roles.buildtools
     - robertdebock.roles.epel
     - robertdebock.roles.python_pip
