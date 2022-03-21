@@ -41,10 +41,6 @@ pip install -r py_requirements.txt
 ansible-galaxy collection install -r requirements.yml
 ```
 
-In the current directory copy the file `host.yml.sample` to `host.yml`
-In the directory `group_vars/all` copy the file `vault_vars.sample` to `vault_vars`
-
-
 ## Sample with server at Hetzner and DNS at Netcup
 
 **Disclaimer** 
@@ -79,6 +75,11 @@ This will produce the files `hetzner` (the private key) and `hetzner.pub` (the p
 
 **Important:** The files are sensible data. Handle them with care. This is especially true for the private key. Even if you added a password to it you should consider this file as a good-to-protect secret.
 
+The next step provides some basic preparation.
+```console
+ansible-playbook prep.yml
+```
+creates the file `groups_vars/all/vault_vars`. Some passwords will be created during the preparation, other values in that file have to be assigned by you. 
 ### Hetzner
 You will need to add the public key to a project. Login to hetzner.com and choose the section *Cloud*. After that choose the *Default* project, select the key symbol on the left side and add the key by clicking on the red button "add ssh-key". Please name it **hetzner** in order to be compatible with the value in `roles/hetzner/create/tasks/order.yml` in the list *ssh_keys*
 
@@ -120,7 +121,7 @@ ok: [localhost] => {
 }
 ...
 ```
-Copy the IPv4 value to the hosts.yml file for the ansible_host key like this:
+After this step ansible will create the file hosts.yml similar to this example:
 
 ```console
 all:

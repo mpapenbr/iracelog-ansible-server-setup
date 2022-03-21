@@ -1,5 +1,5 @@
 ---
-- name: create server {{ server.hostname }} at Hetzner
+- name: create server "{{ server.hostname }}" at Hetzner
   hetzner.hcloud.hcloud_server:
     name: "{{ server.hostname }}"
     server_type: "{{ server.server_type | default('cx11') }}"

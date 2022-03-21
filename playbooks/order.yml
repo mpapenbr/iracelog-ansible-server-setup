@@ -6,6 +6,10 @@
   roles:
     - hetzner/create
 
+  tasks:
+    - name: create local hosts file
+      template: src=../hosts.yml.sample dest=../hosts.yml
+
   vars:
     hetzner_order_server_list:
     

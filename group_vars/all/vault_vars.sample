@@ -9,22 +9,26 @@ vault_netcup_api_key: "Enter Netcup-API key here"
 vault_netcup_api_password: "Enter Netcup-API password here"
 vault_netcup_customer_id: EnterYourNetcupCustomerId
 
+# this is used for personal settings 
+vault_username: sample
+vault_lets_encrypt_email_address: EnterYourEmailAddressForLetsEncryptCertsHere
+vault_main_domain: EnterTheDomainHere
+
+#
+# the following passwords will be created during preparation
+#
+vault_hetzner_public_key: {{ hetzner_public_key }}
 
 # this is used for iracelog
 vault_db_user: docker
-vault_db_password: EnterPasswordHere
-vault_racelog_dataprovider_ticket: EnterPasswordHere
-vault_racelog_backend_ticket: EnterPasswordHere
-vault_racelog_admin_ticket: EnterPasswordHere
+vault_db_password: {{ gen_db_password }}
+vault_racelog_dataprovider_ticket: {{ gen_racelog_dataprovider_password }}
+vault_racelog_backend_ticket: {{ gen_racelog_backend_password }}
+vault_racelog_admin_ticket: {{ gen_racelog_admin_password }}
 
 # this is used for traefik
 vault_traefik_user: traefik
-vault_traefik_password: EnterPasswordHere
+vault_traefik_password: {{ gen_traefik_password }}
 
-# this is used for personal settings 
-vault_username: sample
-vault_hetzner_public_key: "Insert content of hetzner.pub here" 
-vault_lets_encrypt_email_address: EnterYourEmailAddressForLetsEncryptCertsHere
-vault_main_domain: EnterTheDomainHere
 
 
