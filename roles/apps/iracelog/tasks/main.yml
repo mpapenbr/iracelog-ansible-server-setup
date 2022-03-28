@@ -16,21 +16,26 @@
 
 - name: Distribute templated files
   template:
-      src: "templates/{{ item.src }}"
-      dest: "~{{username}}/iracelog/{{ item.dest }}"
-      owner: "{{username}}"
-      group: "{{username}}"
-      mode: "{{ item.mode | default('u=rw,g=rw,o=r') }}"
+    src: "templates/{{ item.src }}"
+    dest: "~{{username}}/iracelog/{{ item.dest }}"
+    owner: "{{username}}"
+    group: "{{username}}"
+    mode: "{{ item.mode | default('u=rw,g=rw,o=r') }}"
   with_items:
-    - {src: '.env.j2', dest: ".env"}
-    - {src: 'docker-compose.yml.j2', dest: "docker-compose.yml"}
-    - {src: 'frontend.json.j2', dest: "config/iracelog/frontend.json"}
+    - { src: ".env.j2", dest: ".env" }
+    - { src: "docker-compose.yml.j2", dest: "docker-compose.yml" }
+    - {
+        src: "createDump.sh.j2",
+        dest: "createDump.sh",
+        mode: "u=rwx,g=rwx,o=rx",
+      }
+    - { src: "frontend.json.j2", dest: "config/iracelog/frontend.json" }
 
 - name: shutdown iracelog app
   community.docker.docker_compose:
-    project_src: "~{{ username }}/iracelog"    
+    project_src: "~{{ username }}/iracelog"
     state: absent
-  register: output    
+  register: output
 
 - name: start iracelog migration
   community.docker.docker_compose:
@@ -46,9 +51,6 @@
     state: present
   register: output
 
-
 - name: startup output
   ansible.builtin.debug:
     var: output
-
-

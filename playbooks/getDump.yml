@@ -1,0 +1,16 @@
+- name: Get database dump
+  hosts: prod
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: create database dump on server
+      ansible.builtin.command:
+        cmd: ./createDump.sh
+        chdir: "~{{ username }}/iracelog"
+
+    - name: copy database dump from server to local system
+      ansible.builtin.fetch:
+        src: /tmp/iracelog.dump
+        dest: ../dumps/
+        flat: yes
