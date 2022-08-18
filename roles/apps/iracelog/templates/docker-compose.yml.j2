@@ -155,6 +155,36 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.routers.frontend.middlewares=mp-headers@file,compress-content@file"
       - "traefik.docker.network=my_traefik_network"
+  
+  # the graphql api
+  graphql:
+    image: ghcr.io/mpapenbr/iracelog-graphql:{{ iracelog_graphql_version }}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+    networks:
+      - somenet
+      - traefiknet
+
+    depends_on:
+      - db
+
+    environment:
+      TZ: "Europe/Berlin"
+      DATABASE_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.graphql.rule=Host(`graphql.{{ main_domain }}`)"
+      - "traefik.http.routers.graphql.entrypoints=websecure"
+      - "traefik.http.routers.graphql.tls=true"
+      - "traefik.http.routers.graphql.tls.certresolver=myresolver"
+      - "traefik.http.routers.graphql.middlewares=mp-headers@file,compress-content@file"
+      - "traefik.docker.network=my_traefik_network"
 
 
 
@@ -180,6 +210,7 @@ services:
       - ism-archiver
       - ias
       - iracelog
+      - graphql
 
 
 volumes:
