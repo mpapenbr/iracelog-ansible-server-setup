@@ -47,12 +47,11 @@
                                     "cache": true
                                 },
                                 {
-                                    "uri": "racelog.public.live.state",
+                                    "uri": "racelog.public.live",
                                     "match": "prefix",
                                     "allow": {
                                         "publish": true
                                     },
-
                                     "cache": true
                                 }
                             ]
@@ -110,24 +109,22 @@
                     "paths": {
                         "info": {
                             "type": "nodeinfo"
-                         },
-
-                         "ws": {
-                             "type": "websocket",
-                             "options": {
-                                 "auto_ping_interval": 30000,
-                                 "compression": {
+                        },
+                        "ws": {
+                            "type": "websocket",
+                            "options": {
+                                "auto_ping_interval": 30000,
+                                "compression": {
                                     "deflate": {
-                                       "request_no_context_takeover": false,
-                                       "request_max_window_bits": 11,
-                                       "no_context_takeover": false,
-                                       "max_window_bits": 11,
-                                       "memory_level": 4
+                                        "request_no_context_takeover": false,
+                                        "request_max_window_bits": 11,
+                                        "no_context_takeover": false,
+                                        "max_window_bits": 11,
+                                        "memory_level": 4
                                     }
-                                 }
-
-                             },
-                             "auth": {
+                                }
+                            },
+                            "auth": {
                                 "anonymous": {
                                     "type": "static",
                                     "role": "anonymous"
@@ -150,8 +147,7 @@
                                     }
                                 }
                             }
-
-                         }
+                        }
                     }
                 }
             ]

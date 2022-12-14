@@ -1,4 +1,3 @@
-
 - name: Remove servers
   hosts: localhost
   gather_facts: false
@@ -8,13 +7,11 @@
 
   vars:
     hetzner_remove_server_list:
-    
-    - hostname: server      
-      server_type: cx21
-      subdomains:
-        - server
-        - traefik        
-        - iracelog
-        - crossbar
-    
-
+      - hostname: server
+        server_type: cx21
+        subdomains:
+          - server
+          - traefik
+          - iracelog
+          - crossbar
+          - graphql

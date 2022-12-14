@@ -1,4 +1,3 @@
-
 - name: Order servers
   hosts: localhost
   gather_facts: false
@@ -12,12 +11,11 @@
 
   vars:
     hetzner_order_server_list:
-    
-    - hostname: server      
-      server_type: cx21
-      subdomains:
-        - server
-        - traefik
-        - iracelog
-        - crossbar
-    
+      - hostname: server
+        server_type: cx21
+        subdomains:
+          - server
+          - traefik
+          - iracelog
+          - crossbar
+          - graphql
