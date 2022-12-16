@@ -66,8 +66,9 @@ ansible-galaxy collection install -r requirements.yml
 - Can I use my own server environment?
 
   This setup is designed for people who like to evalute this software and are not that familar with setting up linux servers in the internet.
+  So we use a predefined environment based on Ubuntu, Docker and Traefik. The services needed are wired via docker compose and we use Let's Encrypt for SSL certificates.
 
-  See [advanced setup](README-advanced.md) for further information.
+  If you're interested in environments for local evaluation on your own machines you may start with [this docker compose setup](https://github.com/mpapenbr/iracelog-deployment).
 
 In case you don't already have an ssh key, here's an example how to get one
 
