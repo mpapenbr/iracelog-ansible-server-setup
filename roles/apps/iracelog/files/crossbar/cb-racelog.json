@@ -47,6 +47,14 @@
                                     "cache": true
                                 },
                                 {
+                                    "uri": "racelog.public",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true
+                                    },
+                                    "cache": true
+                                },
+                                {
                                     "uri": "racelog.public.live",
                                     "match": "prefix",
                                     "allow": {
