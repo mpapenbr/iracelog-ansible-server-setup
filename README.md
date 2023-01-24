@@ -169,12 +169,15 @@ ansible-playbook playbooks/init.yml -i hosts.yml
 
 ## Updating the software
 
-When new versions of the components are available, edit the \_iracelog\_\_-variables in `group_vars/all/vars.yml`.
-Afterwards issue the follwing command
+When new versions of the components are available, they will be updated in the repository in the file `group_vars/all/vars.yml`.
+Assuming you have cloned this repository you just have to issue a `git pull` followed by the ansible update playbook
 
 ```console
+git pull
 ansible-playbook playbooks/update.yml -i hosts.yml
 ```
+
+**Note:** This will only update the server components. For an overview of all components of the iRacelog project see [this link](https://github.com/mpapenbr/iracelog-documentation)
 
 ## Create a database dump
 
