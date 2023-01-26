@@ -1,6 +1,9 @@
 # Installation via Ansible
 
 This guide shows how to setup the iracelog backend on a server.
+
+**Note:** See [iracelog-documentation](https://github.com/mpapenbr/iracelog-documentation) for an overview of further components.
+
 In order to perform this you need Python (minimum 3.8) installed an the system.
 See https://python.org for installation instructions.
 
