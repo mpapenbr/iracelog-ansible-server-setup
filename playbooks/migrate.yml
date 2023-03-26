@@ -1,0 +1,25 @@
+- name: Prepare migration
+  hosts: prod
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: shutdown iracelog app
+      community.docker.docker_compose:
+        project_src: "~{{ username }}/iracelog"
+        state: absent
+      register: output
+
+    - name: shutdown traefik
+      community.docker.docker_compose:
+        project_src: "~{{ username }}/traefik"
+        state: absent
+      register: output
+
+    - name: remove all docker images
+      community.docker.docker_prune:
+        images: true
+        images_filters:
+          dangling: false
+        debug: true
+      register: output
