@@ -1,5 +1,5 @@
 - name: shutdown iracelog app
   community.docker.docker_compose:
-    project_src: "~{{ username }}/iracelog"    
+    project_src: "~{{ username }}/iracelog"
     state: absent
   register: output

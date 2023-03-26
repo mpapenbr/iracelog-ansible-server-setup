@@ -11,6 +11,12 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
     logging:
       driver: "json-file"
       options:
@@ -26,8 +32,8 @@ services:
     networks:
       - somenet
 
-  crossbar:
-    image: crossbario/crossbar:cpy-amd64-21.2.1
+  iwr:
+    image: ghcr.io/mpapenbr/iracelog-wamp-router:v0.0.2
     restart: always
     networks:
       - somenet
@@ -37,13 +43,12 @@ services:
       options:
         max-size: "2m"
         max-file: "5"
+    command: "server --logLevel info"
     environment:
       TZ: "Europe/Berlin"
-      CROSSBAR_DATAPROVIDER_TICKET: ${CROSSBAR_DATAPROVIDER_TICKET}
-      CROSSBAR_BACKEND_TICKET: ${CROSSBAR_BACKEND_TICKET}
-      CROSSBAR_ADMIN_TICKET: ${CROSSBAR_ADMIN_TICKET}
-    volumes:
-      - ./config/crossbar/cb-racelog.json:/node/.crossbar/config.json
+      DATAPROVIDER_TICKET: ${CROSSBAR_DATAPROVIDER_TICKET}
+      BACKEND_TICKET: ${CROSSBAR_BACKEND_TICKET}
+      ADMIN_TICKET: ${CROSSBAR_ADMIN_TICKET}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.crossbar.rule=Host(`crossbar.{{ main_domain }}`)"
@@ -56,53 +61,41 @@ services:
 
 
   # iracelog-service-manager
-  ism-manager:
-    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "5"
+  ism:
+    image: ghcr.io/mpapenbr/iracelog-service-manager-go:v0.7.0
+
+    networks:
+      - somenet
+    environment:
+      TZ: "Europe/Berlin"
+      ISM_URL: ${RACELOG_URL}
+      ISM_REALM: ${RACELOG_REALM}
+      ISM_USER: ${RACELOG_USER}
+      ISM_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
+      ISM_DB: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+    command: "server"
+    depends_on:
+      - db
+      - iwr
+
+  db-migrate:
+    image: ghcr.io/mpapenbr/iracelog-service-manager-go:v0.7.0
+
     networks:
       - somenet
 
     environment:
       TZ: "Europe/Berlin"
-      RACELOG_URL: ${RACELOG_URL}
-      RACELOG_REALM: ${RACELOG_REALM}
-      RACELOG_USER: ${RACELOG_USER}
-      RACELOG_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
-      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+      ISM_URL: ${RACELOG_URL}
+      ISM_REALM: ${RACELOG_REALM}
+      ISM_USER: ${RACELOG_USER}
+      ISM_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
+      ISM_DB: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
+    command: "migrate"
 
-    command: "ism --check http://crossbar:8080/info manager"
     depends_on:
       - db
-      - crossbar
-
-  ism-archiver:
-    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "5"
-    networks:
-      - somenet
-
-    environment:
-      TZ: "Europe/Berlin"
-      RACELOG_URL: ${RACELOG_URL}
-      RACELOG_REALM: ${RACELOG_REALM}
-      RACELOG_USER: ${RACELOG_USER}
-      RACELOG_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
-      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
-
-    command: "ism --check http://crossbar:8080/info archiver"
-    depends_on:
-      - db
-      - crossbar
+      - iwr
 
   # iracelog-analysis-service
   ias:
@@ -126,7 +119,8 @@ services:
 
     depends_on:
       - db
-      - crossbar
+      - iwr
+
 
   # the frontend
   iracelog:
@@ -186,28 +180,13 @@ services:
       - "traefik.http.routers.graphql.middlewares=mp-headers@file,compress-content@file"
       - "traefik.docker.network=my_traefik_network"
 
-
-
-  db-migrate:
-
-    image: ghcr.io/mpapenbr/iracelog-service-manager:{{ iracelog_ism_version }}
-    networks:
-      - somenet
-    environment:
-      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
-
-    command: "./wait-for-it.sh -h db -p 5432 -s -- alembic -c src/iracelog_service_manager/db/alembic.ini  upgrade head"
-    depends_on:
-      - db
-
   main-services:
     image: busybox
     command: sh -c "echo Starting services"
     depends_on:
       - db
-      - crossbar
-      - ism-manager
-      - ism-archiver
+      - iwr
+      - ism      
       - ias
       - iracelog
       - graphql
