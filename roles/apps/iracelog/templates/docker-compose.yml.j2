@@ -33,7 +33,7 @@ services:
       - somenet
 
   iwr:
-    image: ghcr.io/mpapenbr/iracelog-wamp-router:v0.0.2
+    image: ghcr.io/mpapenbr/iracelog-wamp-router:{{ iracelog_iwr_version }}
     restart: always
     networks:
       - somenet
@@ -62,7 +62,7 @@ services:
 
   # iracelog-service-manager
   ism:
-    image: ghcr.io/mpapenbr/iracelog-service-manager-go:v0.7.0
+    image: ghcr.io/mpapenbr/iracelog-service-manager-go:{{ iracelog_ism_go_version }}
 
     networks:
       - somenet
@@ -79,7 +79,7 @@ services:
       - iwr
 
   db-migrate:
-    image: ghcr.io/mpapenbr/iracelog-service-manager-go:v0.7.0
+    image: ghcr.io/mpapenbr/iracelog-service-manager-go:{{ iracelog_ism_go_version }}
 
     networks:
       - somenet
