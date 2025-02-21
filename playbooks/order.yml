@@ -12,10 +12,11 @@
   vars:
     hetzner_order_server_list:
       - hostname: server
-        server_type: cx21
+        server_type: cx22
+        server_os: debian-12
         subdomains:
           - server
           - traefik
           - iracelog
-          - crossbar
+          - grpc
           - graphql

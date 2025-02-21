@@ -1,9 +1,6 @@
-version: "3.3"
-
 services:
-
   db:
-    image: postgres:14
+    image: postgres:17
     restart: always
     # only used for development
     # ports:
@@ -12,7 +9,7 @@ services:
       - db-data:/var/lib/postgresql/data
 
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER_NAME} -d ${DB_SCHEMA}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,51 +29,34 @@ services:
     networks:
       - somenet
 
-  iwr:
-    image: ghcr.io/mpapenbr/iracelog-wamp-router:{{ iracelog_iwr_version }}
-    restart: always
-    networks:
-      - somenet
-      - traefiknet
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "5"
-    command: "server --logLevel info"
-    environment:
-      TZ: "Europe/Berlin"
-      DATAPROVIDER_TICKET: ${CROSSBAR_DATAPROVIDER_TICKET}
-      BACKEND_TICKET: ${CROSSBAR_BACKEND_TICKET}
-      ADMIN_TICKET: ${CROSSBAR_ADMIN_TICKET}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.crossbar.rule=Host(`crossbar.{{ main_domain }}`)"
-      - "traefik.http.routers.crossbar.entrypoints=websecure"
-      - "traefik.http.routers.crossbar.tls=true"
-      - "traefik.http.routers.crossbar.tls.certresolver=myresolver"
-      - "traefik.http.routers.crossbar.middlewares=mp-headers@file"
-      - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
-      - "traefik.docker.network=my_traefik_network"
-
+  
 
   # iracelog-service-manager
   ism:
     image: ghcr.io/mpapenbr/iracelog-service-manager-go:{{ iracelog_ism_go_version }}
-
+    restart: always
     networks:
       - somenet
+      - traefiknet
     environment:
       TZ: "Europe/Berlin"
-      ISM_URL: ${RACELOG_URL}
-      ISM_REALM: ${RACELOG_REALM}
-      ISM_USER: ${RACELOG_USER}
-      ISM_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
-      ISM_DB: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
-    command: "server"
+      ISM_ADMIN_TOKEN: ${ISM_ADMIN_TOKEN}      
+      ISM_DB: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/${DB_SCHEMA}
+    command: |
+      grpc -a 0.0.0.0:8080 --log-config logger-prod.yml 
     depends_on:
-      - db
-      - iwr
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ism.rule=Host(`grpc.{{ main_domain }}`)"
+      - "traefik.http.routers.ism.entrypoints=websecure"
+      - "traefik.http.routers.ism.tls=true"
+      - "traefik.http.routers.ism.tls.certresolver=myresolver"
+      - "traefik.http.routers.ism.middlewares=mp-headers@file,compress-content@file"
+      - "traefik.http.services.ism.loadbalancer.server.port=8080"
+      - "traefik.docker.network=my_traefik_network"
+      
 
   db-migrate:
     image: ghcr.io/mpapenbr/iracelog-service-manager-go:{{ iracelog_ism_go_version }}
@@ -86,41 +66,15 @@ services:
 
     environment:
       TZ: "Europe/Berlin"
-      ISM_URL: ${RACELOG_URL}
-      ISM_REALM: ${RACELOG_REALM}
-      ISM_USER: ${RACELOG_USER}
-      ISM_PASSWORD: ${CROSSBAR_BACKEND_TICKET}
+      
       ISM_DB: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
     command: "migrate"
 
     depends_on:
-      - db
-      - iwr
+      db:
+        condition: service_healthy
 
-  # iracelog-analysis-service
-  ias:
-    image: ghcr.io/mpapenbr/iracelog-analysis-service:{{ iracelog_ias_version }}
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "5"
-    networks:
-      - somenet
-
-    environment:
-      TZ: "Europe/Berlin"
-      CROSSBAR_URL: ${RACELOG_URL}
-      CROSSBAR_REALM: ${RACELOG_REALM}
-      CROSSBAR_USER: ${RACELOG_USER}
-      CROSSBAR_CREDENTIALS: ${CROSSBAR_BACKEND_TICKET}
-      DB_URL: postgresql://${DB_USER_NAME}:${DB_USER_PASSWORD}@db:5432/iracelog
-
-    depends_on:
-      - db
-      - iwr
-
+  
 
   # the frontend
   iracelog:
@@ -184,10 +138,9 @@ services:
     image: busybox
     command: sh -c "echo Starting services"
     depends_on:
-      - db
-      - iwr
-      - ism      
-      - ias
+      - db  
+      - db-migrate
+      - ism
       - iracelog
       - graphql
 
@@ -201,8 +154,8 @@ volumes:
 networks:
   somenet:
   traefiknet:
-    external:
-      name: my_traefik_network
+    name: my_traefik_network
+    external: true
 
 
 

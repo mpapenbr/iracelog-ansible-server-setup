@@ -1,0 +1,57 @@
+- name: Prepare install
+  ansible.builtin.package:
+    name: "{{ item }}"
+  loop:
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+
+- name: ensure /etc/apt/keyrings
+  ansible.builtin.file:
+    dest: "/etc/apt/keyrings"
+    state: directory
+    mode: 0755
+
+- name: Add an Apt signing key, uses whichever key is at the URL
+  ansible.builtin.shell: "curl -fsSL https://download.docker.com/linux/{{ ansible_lsb.id|lower }}/gpg | sudo gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg"
+  # args:
+  #   warn: false # shell is a workaround since we need to dearmor the PGP key (even the url may suggest otherwise)
+
+- name: Adding docker apt-repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ docker_ppa_arch }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/{{ ansible_lsb.id | lower }} {{ ansible_lsb.codename | lower }} stable"
+    filename: docker
+    state: present
+    update_cache: true
+
+- name: Install docker via apt
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-compose-plugin
+    - python3-docker
+
+- name: add the user to the docker group (so we can run docker without sudo)
+  ansible.builtin.user:
+    name: "{{ username }}"
+    groups: docker
+    append: true
+
+- name: start docker service
+  ansible.builtin.service:
+    name: docker
+    state: started
+
+- name: ensure docker compose alias
+  ansible.builtin.lineinfile:
+    path: "~{{ username }}/.bash_aliases"
+    line: "alias dc='docker compose'"
+    create: true
+    mode: 0644
+    owner: "{{ username }}"
+    group: "{{ username }}"

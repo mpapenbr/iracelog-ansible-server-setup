@@ -11,7 +11,7 @@ See https://python.org for installation instructions.
 
 In the following the term _console_ (or _shell_) describes a Linux-shell.
 
-Windows users should use the Windows Subsystem for Linux (WSL). In case you don't already have it installed you can find the installation instructions [here](https://docs.microsoft.com/de-de/windows/wsl/install). When you setup a Linux distribution please use Ubuntu 20.04.
+Windows users should use the Windows Subsystem for Linux (WSL). In case you don't already have it installed you can find the installation instructions [here](https://docs.microsoft.com/de-de/windows/wsl/install). When you setup a Linux distribution please use Ubuntu 22.04.
 
 **Note**: Installing Python along with Ansible directly on Windows turned out to be a little error prone so the easiest way seems to be using the WSL. For the purpose of just running ansible in the WSL it is ok to have WSL 1. In case this is already available there is no need to update to WSL 2
 
@@ -55,10 +55,10 @@ ansible-galaxy collection install -r requirements.yml
 
 - Why Hetzner and Netcup?
 
-  Hetzner provides Infrastructure as a Server (IaaS). They charge per hour and the rates a quite fair. In this example we use a CX21 server which costs about 0.01€/h or 6€/month at most.
+  Hetzner provides Infrastructure as a Server (IaaS). They charge per hour and the rates a quite fair. In this example we use a CX22 server which costs about 0.01€/h or ~5€/month at most.
 
   Netcup offers .de domains for 5€/year. Hetzner also offers domains but they charge ~12€/year
-  (Information as of 2022-02-26)
+  (Information as of 2025-02-20)
 
   Another important aspect is they both provide API access to their services and there are ansible roles available.
 
@@ -128,7 +128,7 @@ ok: [localhost] => {
     "msg": [
         "created server",
         "id: 18298251",
-        "type:        cx21",
+        "type:        cx22",
         "status:      running",
         "datacenter:  fsn1-dc14",
         "IPv4:        142.132.235.223",
@@ -170,6 +170,31 @@ This command will do the following:
 ansible-playbook playbooks/init.yml -i hosts.yml
 ```
 
+## Initial steps after installation
+
+The database needs to be initialized with a credential that is used by the [racelogger].
+This is done by creating an API key.
+
+```shell
+docker run --rm ghcr.io/mpapenbr/iracelog-cli:v0.7.1 -a grpc.MAIN_DOMAIN  tenant edit --name default --generate-api-key --enable-active -t ADMIN_TOKEN
+
+```
+
+Example:
+
+```shell
+docker run --rm ghcr.io/mpapenbr/iracelog-cli:v0.7.1 -a grpc.example.com  tenant edit --name default --generate-api-key --enable-active -t dzfPfPTAWGlIFTQmRbRrhdqyITsUSmSb
+
+Using config file: /workspaces/iracelog-cli/.iracelog-cli.yml
+11:05:47.434    info    connect ism     {"addr": "grpc.example.com"}
+11:05:47.435    debug   TLS enabled
+Tenant updated
+The api key is:  tRpaYdctZsSEUUouzmqfpYiFWJRLtjCd
+externalId=b273a6df-c0fc-4111-9287-d1cccd143d4b name=default isactive=true
+```
+
+Configure this API key in the [racelogger]
+
 ## Updating the software
 
 When new versions of the components are available, they will be updated in the repository in the file `group_vars/all/vars.yml`.
@@ -193,3 +218,7 @@ ansible-playbook playbooks/getDump.yml -i hosts.yml
 This will create a database dump and store it at `/tmp/iracelog.dump` on the server. Afterwards the dump will be copied to your local system and stored at the `dumps` directories here.
 
 **Note:** If there is already a database dump from a previous backup the file will be overwritten.
+
+---
+
+[racelogger]: https://github.com/mpapenbr/go-racelogger

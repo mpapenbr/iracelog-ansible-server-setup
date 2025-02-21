@@ -8,10 +8,10 @@
   vars:
     hetzner_remove_server_list:
       - hostname: server
-        server_type: cx21
+        server_type: cx22
         subdomains:
           - server
           - traefik
           - iracelog
-          - crossbar
+          - grpc
           - graphql

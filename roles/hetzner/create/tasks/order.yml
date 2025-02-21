@@ -4,7 +4,7 @@
     name: "{{ server.hostname }}"
     server_type: "{{ server.server_type | default('cx11') }}"
     location: "{{ server.server_location | default ('fsn1')}}"
-    image: "{{ server.server_os | default('ubuntu-20.04')}}"
+    image: "{{ server.server_os | default('ubuntu-24.04')}}"
     ssh_keys:
       - hetzner
     state: present
@@ -21,8 +21,6 @@
 #     state: present
 #   register: volume
 
-
-
 - name: print status
   debug:
     msg:
@@ -33,8 +31,6 @@
       - "datacenter:  {{ hetzner_create_server.hcloud_server.datacenter }}"
       - "IPv4:        {{ hetzner_create_server.hcloud_server.ipv4_address }}"
       - "IPv6:        {{ hetzner_create_server.hcloud_server.ipv6 }}"
-
-
 
 - name: create DNS A records
   community.general.netcup_dns:
