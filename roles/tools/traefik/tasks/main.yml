@@ -9,14 +9,12 @@
     - "~{{username}}/traefik/config"
     - "~{{username}}/traefik/logs"
     - "~{{username}}/traefik/letsencrypt"
-  
 
 - name: Prepare docker compose file
-  template:
-      src=docker-compose.yml
-      dest=~{{username}}/traefik
-      owner="{{username}}"
-      group="{{username}}"
+  template: src=docker-compose.yml
+    dest=~{{username}}/traefik
+    owner="{{username}}"
+    group="{{username}}"
 
 - name: ensure docker service network
   community.docker.docker_network:
@@ -30,7 +28,7 @@
     owner: "{{ username }}"
     group: "{{ username }}"
   loop:
-    - base.yml    
+    - base.yml
     - tls.yml
 
 - name: copy templated config files
@@ -41,17 +39,12 @@
     group: "{{ username }}"
   loop:
     - basicauth.yml
-    
-
-
 
 - name: start services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "~{{ username }}/traefik"
     state: present
   register: output
 
 - ansible.builtin.debug:
     var: output
-
-

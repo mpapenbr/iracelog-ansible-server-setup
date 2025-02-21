@@ -1,7 +1,4 @@
 db_schema: iracelog
 db_user: "{{ vault_db_user }}"
 db_password: "{{ vault_db_password }}"
-racelog_dataprovider_ticket: "{{ vault_racelog_dataprovider_ticket }}"
-racelog_backend_ticket: "{{ vault_racelog_backend_ticket }}"
-racelog_admin_ticket: "{{ vault_racelog_admin_ticket }}"
-
+racelog_admin_token: "{{ vault_racelog_admin_token }}"

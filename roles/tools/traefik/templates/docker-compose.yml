@@ -1,9 +1,6 @@
-version: "3.3"
-
 services:
-
   traefik:
-    image: "traefik:v2.5"
+    image: "traefik:v3.3"
     container_name: "traefik"
     restart: always
     command:
@@ -18,8 +15,11 @@ services:
       - "--providers.file.directory=/config"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http3"
+      - "--entrypoints.web.http2.maxConcurrentStreams=2000"
+      - "--entrypoints.websecure.http2.maxConcurrentStreams=2000"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email={{ lets_encrypt_email_address }}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
@@ -36,7 +36,7 @@ services:
         max-size: "2m"
         max-file: "5"
     labels:
-        #___ core configs
+      #___ core configs
       - "traefik.enable=true"
       # Dashboard
       - "traefik.http.routers.traefik.rule=Host(`traefik.{{ main_domain }}`)"
@@ -53,11 +53,7 @@ services:
       # middleware redirect
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
-       
 networks:
   default:
-    external:
-      name: my_traefik_network
-
-
-
+    name: my_traefik_network
+    external: true

@@ -1,17 +1,13 @@
-- name: Initial preparation 
+- name: Initial preparation
   hosts: localhost
-  
+
   tasks:
-  
-  - name: create passwords
-    template: src=group_vars/all/vault_vars.sample dest=group_vars/all/vault_vars
-    delegate_to: localhost
-  
-  
-  vars:    
+    - name: "create passwords"
+      template: mode=0644 src=group_vars/all/vault_vars.sample dest=group_vars/all/vault_vars
+      delegate_to: localhost
+
+  vars:
     gen_db_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
-    gen_racelog_dataprovider_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
-    gen_racelog_backend_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
     gen_racelog_admin_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
-    gen_traefik_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"    
-    hetzner_public_key: "{{ lookup('file', './hetzner.pub') }}" 
+    gen_traefik_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    hetzner_public_key: "{{ lookup('file', './hetzner.pub') }}"
