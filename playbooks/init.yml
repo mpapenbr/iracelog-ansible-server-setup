@@ -3,18 +3,18 @@
   become: true
   gather_facts: true
   roles:
-    - robertdebock.roles.bootstrap
-    - robertdebock.roles.core_dependencies
-    - robertdebock.roles.locale
-    - robertdebock.roles.buildtools
-    - robertdebock.roles.epel
-    - robertdebock.roles.users
-    - robertdebock.roles.software
-    - robertdebock.roles.fail2ban
-    - robertdebock.roles.openssh
-    - robertdebock.roles.firewall
-    - robertdebock.roles.auto_update
-    - robertdebock.roles.update
+    - robertdebock.bootstrap
+    - robertdebock.core_dependencies
+    - robertdebock.locale
+    - robertdebock.buildtools
+    - robertdebock.epel
+    - robertdebock.users
+    - robertdebock.software
+    - robertdebock.fail2ban
+    - robertdebock.openssh
+    - robertdebock.firewall
+    - robertdebock.auto_update
+    - robertdebock.update
     - tools/docker
     - tools/traefik
     - apps/iracelog

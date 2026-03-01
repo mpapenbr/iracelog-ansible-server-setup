@@ -38,14 +38,22 @@ python3 --version
 
 If Python is not installed you may follow the instructions on [this post for python](https://linuxize.com/post/how-to-install-python-3-9-on-ubuntu-20-04/) and [this post for python-pip](https://linuxize.com/post/how-to-install-pip-on-ubuntu-20.04/)
 
+Starting with Ubuntu 24.04 and Debian 12 you can/should no longer install global python modules via pip. Instead you need to use virtualenv.
+
+```console
+sudo apt install python3-venv
+```
+
 ### Ansible
 
 Follow the instructions from the [official Ansible documentation](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-ubuntu)
 
-Once Python and Ansible are installed, run the following commands on the console.
+Once Python and Ansible are installed, run the following commands on the console. Since we need some pip modules we use a virtualenv `myinstall`
 
 ```console
-pip install -r py_requirements.txt
+python3 -m venv myinstall
+source myinstall/bin/activate
+pip3 install -r py_requirements.txt
 ansible-galaxy collection install -r requirements.yml
 ```
 

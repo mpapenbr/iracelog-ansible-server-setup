@@ -10,10 +10,12 @@
       template: src=../hosts.yml.sample dest=../hosts.yml
 
   vars:
+    # see https://docs.hetzner.com/de/cloud/ for more details about server types, locations and images
     hetzner_order_server_list:
       - hostname: server
-        server_type: cx22
-        server_os: debian-12
+        server_type: cx23
+        server_location: hel1
+        server_os: ubuntu-24.04
         subdomains:
           - server
           - traefik

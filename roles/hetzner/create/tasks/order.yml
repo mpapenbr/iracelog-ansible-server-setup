@@ -1,8 +1,8 @@
 ---
-- name: create server "{{ server.hostname }}" at Hetzner
+- name: Create server "{{ server.hostname }}" at Hetzner
   hetzner.hcloud.hcloud_server:
     name: "{{ server.hostname }}"
-    server_type: "{{ server.server_type | default('cx11') }}"
+    server_type: "{{ server.server_type | default('cx23') }}"
     location: "{{ server.server_location | default ('fsn1')}}"
     image: "{{ server.server_os | default('ubuntu-24.04')}}"
     ssh_keys:
@@ -21,7 +21,7 @@
 #     state: present
 #   register: volume
 
-- name: print status
+- name: Print status
   debug:
     msg:
       - "created {{ hetzner_create_server.hcloud_server.name }}"
@@ -32,7 +32,7 @@
       - "IPv4:        {{ hetzner_create_server.hcloud_server.ipv4_address }}"
       - "IPv6:        {{ hetzner_create_server.hcloud_server.ipv6 }}"
 
-- name: create DNS A records
+- name: Create DNS A records
   community.general.netcup_dns:
     api_key: "{{ netcup_api_key }}"
     api_password: "{{ netcup_api_password }}"

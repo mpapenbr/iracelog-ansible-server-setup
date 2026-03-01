@@ -3,3 +3,5 @@ hetzner.pub
 group_vars/all/vault_vars
 hosts.yml
 dumps/
+myinstall/
+.envrc

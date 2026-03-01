@@ -1,8 +1,20 @@
 ---
-roles: []
+roles:
+  - name: robertdebock.bootstrap
+  - name: robertdebock.cron
+  - name: robertdebock.core_dependencies
+  - name: robertdebock.locale
+  - name: robertdebock.buildtools
+  - name: robertdebock.epel
+  - name: robertdebock.users
+  - name: robertdebock.software
+  - name: robertdebock.openssh
+  - name: robertdebock.auto_update
+  - name: robertdebock.update
+  - name: robertdebock.fail2ban
+  - name: robertdebock.firewall
 
 collections:
-  - name: robertdebock.roles
   - name: community.general
   - name: community.docker
   - name: hetzner.hcloud
