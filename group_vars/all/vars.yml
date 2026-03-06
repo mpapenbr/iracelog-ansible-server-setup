@@ -43,4 +43,4 @@ docker_privileged_users:
 main_domain: "{{ vault_main_domain }}"
 iracelog_ism_go_version: v0.38.2
 iracelog_frontend_version: v0.43.0
-iracelog_graphql_version: v0.7.0
+iracelog_graphql_version: v0.7.2
